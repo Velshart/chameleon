@@ -1,5 +1,6 @@
 package me.mmtr.chameleon.filter;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,29 +45,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String jwt = getJwtTokenFromAuthorizationHeader(authorizationHeader);
-        final String username = jwtService.extractUsername(jwt);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        try {
+            final String username = jwtService.extractUsername(jwt);
 
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
+            if (
+                    username != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null
+            ) {
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(username);
 
-//                authenticationToken.setDetails(
-//                        new WebAuthenticationDetailsSource()
-//                                .buildDetails(request)
-//                );
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
 
-                SecurityContextHolder
-                        .getContext()
-                        .setAuthentication(authenticationToken);
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(authenticationToken);
+                }
             }
-        }
+        } catch (JwtException _) {}
+
         filterChain.doFilter(request, response);
     }
 
