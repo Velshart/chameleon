@@ -6,7 +6,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.mmtr.chameleon.service.JwtService;
-import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,8 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
+            HttpServletResponse response,
+            FilterChain filterChain
     ) throws ServletException, IOException {
 
         final String authorizationHeader = request.getHeader("Authorization");
@@ -51,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (
                     username != null &&
-                    SecurityContextHolder.getContext().getAuthentication() == null
+                            SecurityContextHolder.getContext().getAuthentication() == null
             ) {
                 UserDetails userDetails =
                         userDetailsService.loadUserByUsername(username);
@@ -69,7 +68,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .setAuthentication(authenticationToken);
                 }
             }
-        } catch (JwtException _) {}
+        } catch (JwtException _) {
+        }
 
         filterChain.doFilter(request, response);
     }

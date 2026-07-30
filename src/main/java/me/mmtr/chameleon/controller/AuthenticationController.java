@@ -5,7 +5,6 @@ import me.mmtr.chameleon.model.dto.AuthenticationRequest;
 import me.mmtr.chameleon.model.dto.AuthenticationResponse;
 import me.mmtr.chameleon.model.dto.RegisterRequest;
 import me.mmtr.chameleon.service.AuthenticationService;
-import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +22,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<@NonNull AuthenticationResponse> register(
+    public ResponseEntity<AuthenticationResponse> register(
             @Valid @RequestBody RegisterRequest registerRequest
     ) {
         return ResponseEntity
@@ -32,7 +31,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<@NonNull AuthenticationResponse> login(
+    public ResponseEntity<AuthenticationResponse> login(
             @Valid @RequestBody AuthenticationRequest authenticationRequest
     ) {
         return ResponseEntity.ok(authenticationService.login(authenticationRequest));
