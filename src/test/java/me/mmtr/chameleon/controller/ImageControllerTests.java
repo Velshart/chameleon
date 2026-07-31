@@ -6,7 +6,7 @@ import me.mmtr.chameleon.filter.RateLimitingFilter;
 import me.mmtr.chameleon.handler.GlobalExceptionHandler;
 import me.mmtr.chameleon.model.User;
 import me.mmtr.chameleon.model.assembler.ImageModelAssembler;
-import me.mmtr.chameleon.model.dto.ImageResponse;
+import me.mmtr.chameleon.model.dto.request.ImageResponse;
 import me.mmtr.chameleon.model.images.Image;
 import me.mmtr.chameleon.service.ImageService;
 import org.junit.jupiter.api.Test;

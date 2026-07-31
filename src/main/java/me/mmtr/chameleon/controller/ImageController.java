@@ -2,7 +2,7 @@ package me.mmtr.chameleon.controller;
 
 import me.mmtr.chameleon.model.User;
 import me.mmtr.chameleon.model.assembler.ImageModelAssembler;
-import me.mmtr.chameleon.model.dto.ImageResponse;
+import me.mmtr.chameleon.model.dto.request.ImageResponse;
 import me.mmtr.chameleon.model.images.Image;
 import me.mmtr.chameleon.service.ImageService;
 import org.springframework.hateoas.CollectionModel;

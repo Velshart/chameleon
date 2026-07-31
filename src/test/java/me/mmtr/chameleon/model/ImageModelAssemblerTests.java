@@ -1,7 +1,7 @@
 package me.mmtr.chameleon.model;
 
 import me.mmtr.chameleon.model.assembler.ImageModelAssembler;
-import me.mmtr.chameleon.model.dto.ImageResponse;
+import me.mmtr.chameleon.model.dto.request.ImageResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;

@@ -1,4 +1,4 @@
-package me.mmtr.chameleon.model.dto;
+package me.mmtr.chameleon.model.dto.request;
 
 import me.mmtr.chameleon.model.images.Image;
 

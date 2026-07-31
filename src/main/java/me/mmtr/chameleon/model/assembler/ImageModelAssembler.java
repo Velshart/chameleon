@@ -1,7 +1,7 @@
 package me.mmtr.chameleon.model.assembler;
 
 import me.mmtr.chameleon.controller.ImageController;
-import me.mmtr.chameleon.model.dto.ImageResponse;
+import me.mmtr.chameleon.model.dto.request.ImageResponse;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;

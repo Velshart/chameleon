@@ -3,7 +3,7 @@ package me.mmtr.chameleon.service;
 import jakarta.transaction.Transactional;
 import me.mmtr.chameleon.exception.ImageNotFoundException;
 import me.mmtr.chameleon.model.User;
-import me.mmtr.chameleon.model.dto.ImageResponse;
+import me.mmtr.chameleon.model.dto.request.ImageResponse;
 import me.mmtr.chameleon.model.images.Image;
 import me.mmtr.chameleon.model.images.ImageData;
 import me.mmtr.chameleon.repository.ImageDataRepository;

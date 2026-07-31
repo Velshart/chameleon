@@ -1,9 +1,9 @@
 package me.mmtr.chameleon.service;
 
 import me.mmtr.chameleon.model.User;
-import me.mmtr.chameleon.model.dto.AuthenticationRequest;
-import me.mmtr.chameleon.model.dto.AuthenticationResponse;
-import me.mmtr.chameleon.model.dto.RegisterRequest;
+import me.mmtr.chameleon.model.dto.request.AuthenticationRequest;
+import me.mmtr.chameleon.model.dto.response.AuthenticationResponse;
+import me.mmtr.chameleon.model.dto.request.RegisterRequest;
 import me.mmtr.chameleon.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

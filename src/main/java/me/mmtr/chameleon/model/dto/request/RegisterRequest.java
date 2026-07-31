@@ -1,4 +1,4 @@
-package me.mmtr.chameleon.model.dto;
+package me.mmtr.chameleon.model.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

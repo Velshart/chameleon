@@ -1,9 +1,9 @@
 package me.mmtr.chameleon.controller;
 
 import jakarta.validation.Valid;
-import me.mmtr.chameleon.model.dto.AuthenticationRequest;
-import me.mmtr.chameleon.model.dto.AuthenticationResponse;
-import me.mmtr.chameleon.model.dto.RegisterRequest;
+import me.mmtr.chameleon.model.dto.request.AuthenticationRequest;
+import me.mmtr.chameleon.model.dto.response.AuthenticationResponse;
+import me.mmtr.chameleon.model.dto.request.RegisterRequest;
 import me.mmtr.chameleon.service.AuthenticationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
