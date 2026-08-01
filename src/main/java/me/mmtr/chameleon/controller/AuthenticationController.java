@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import me.mmtr.chameleon.model.dto.request.AuthenticationRequest;
 import me.mmtr.chameleon.model.dto.response.AuthenticationResponse;
 import me.mmtr.chameleon.model.dto.request.RegisterRequest;
-import me.mmtr.chameleon.service.AuthenticationService;
+import me.mmtr.chameleon.service.authentication.AuthenticationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

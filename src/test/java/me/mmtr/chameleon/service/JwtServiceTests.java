@@ -1,6 +1,7 @@
 package me.mmtr.chameleon.service;
 
 import io.jsonwebtoken.JwtException;
+import me.mmtr.chameleon.service.authentication.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.User;

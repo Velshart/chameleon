@@ -1,4 +1,4 @@
-package me.mmtr.chameleon.service;
+package me.mmtr.chameleon.service.authentication;
 
 import me.mmtr.chameleon.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;

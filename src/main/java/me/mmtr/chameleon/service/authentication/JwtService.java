@@ -1,4 +1,4 @@
-package me.mmtr.chameleon.service;
+package me.mmtr.chameleon.service.authentication;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

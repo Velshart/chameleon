@@ -1,4 +1,4 @@
-package me.mmtr.chameleon.service;
+package me.mmtr.chameleon.service.images;
 
 import jakarta.transaction.Transactional;
 import me.mmtr.chameleon.exception.ImageNotFoundException;

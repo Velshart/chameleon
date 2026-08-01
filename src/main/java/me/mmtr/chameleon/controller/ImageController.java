@@ -1,10 +1,13 @@
 package me.mmtr.chameleon.controller;
 
+import jakarta.validation.Valid;
 import me.mmtr.chameleon.model.User;
 import me.mmtr.chameleon.model.assembler.ImageModelAssembler;
 import me.mmtr.chameleon.model.dto.request.ImageResponse;
+import me.mmtr.chameleon.model.dto.request.transformation.TransformImageRequest;
 import me.mmtr.chameleon.model.images.Image;
-import me.mmtr.chameleon.service.ImageService;
+import me.mmtr.chameleon.service.images.ImageService;
+import me.mmtr.chameleon.service.images.ImageTransformationService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
@@ -24,13 +27,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/api/images")
 public class ImageController {
     private final ImageService imageService;
+    private final ImageTransformationService imageTransformationService;
     private final ImageModelAssembler imageModelAssembler;
 
     public ImageController(
             ImageService imageService,
+            ImageTransformationService imageTransformationService,
             ImageModelAssembler imageModelAssembler
     ) {
         this.imageService = imageService;
+        this.imageTransformationService = imageTransformationService;
         this.imageModelAssembler = imageModelAssembler;
     }
 
@@ -86,6 +92,25 @@ public class ImageController {
                                 "\""
                 )
                 .body(data);
+    }
+
+    @PostMapping("/{id}/transform")
+    public ResponseEntity<byte[]> transformImage(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser,
+            @Valid @RequestBody TransformImageRequest request
+    ) {
+        ImageTransformationService.TransformedImage transformedImage =
+                imageTransformationService.transformImage(
+                        id,
+                        currentUser,
+                        request.transformations()
+                );
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(
+                        "image/" + transformedImage.format()
+                )).body(transformedImage.imageData());
     }
 
     @DeleteMapping("/{id}")

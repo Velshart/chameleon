@@ -7,6 +7,7 @@ import me.mmtr.chameleon.model.images.Image;
 import me.mmtr.chameleon.model.images.ImageData;
 import me.mmtr.chameleon.repository.ImageDataRepository;
 import me.mmtr.chameleon.repository.ImageRepository;
+import me.mmtr.chameleon.service.images.ImageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

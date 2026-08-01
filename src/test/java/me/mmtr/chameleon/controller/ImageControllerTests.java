@@ -8,7 +8,7 @@ import me.mmtr.chameleon.model.User;
 import me.mmtr.chameleon.model.assembler.ImageModelAssembler;
 import me.mmtr.chameleon.model.dto.request.ImageResponse;
 import me.mmtr.chameleon.model.images.Image;
-import me.mmtr.chameleon.service.ImageService;
+import me.mmtr.chameleon.service.images.ImageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;

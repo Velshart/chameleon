@@ -1,4 +1,4 @@
-package me.mmtr.chameleon.service;
+package me.mmtr.chameleon.service.authentication;
 
 import me.mmtr.chameleon.model.User;
 import me.mmtr.chameleon.model.dto.request.AuthenticationRequest;
