@@ -60,7 +60,14 @@ public class ImageService {
                 .orElseThrow(() -> new ImageNotFoundException(id));
     }
 
-    public byte[] getImageData(Long id, User currentUser) {
+    public ImageData getImageData(Long id, User currentUser) {
+        getImageForOwner(id, currentUser);
+
+        return imageDataRepository.findById(id)
+                .orElseThrow(() -> new ImageNotFoundException(id));
+    }
+
+    public byte[] getImageDataAsBytes(Long id, User currentUser) {
         getImageForOwner(id, currentUser);
 
         return imageDataRepository.findById(id)

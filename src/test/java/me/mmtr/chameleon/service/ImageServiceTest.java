@@ -152,7 +152,61 @@ public class ImageServiceTest {
         when(imageDataRepository.findById(IMAGE_ID))
                 .thenReturn(Optional.of(imageData));
 
-        byte[] data = imageService.getImageData(IMAGE_ID, owner);
+        ImageData returnedImageData = imageService.getImageData(IMAGE_ID, owner);
+        assertArrayEquals(
+                "image-bytes".getBytes(),
+                returnedImageData.getData()
+        );
+
+        assertEquals(image, returnedImageData.getImage());
+    }
+
+    @Test
+    void shouldPropagateImageNotFoundExceptionWhenOwnershipCheckFails() {
+        when(imageRepository.findByIdAndOwnerUsername(IMAGE_ID, USERNAME))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ImageNotFoundException.class,
+                () -> imageService.getImageData(IMAGE_ID, owner)
+        );
+    }
+
+    @Test
+    void shouldThrowImageNotFoundExceptionWhenImageDataNotFound() {
+        Image image = new Image(
+                "cat.jpg",
+                "image/jpeg",
+                11L,
+                owner
+        );
+        when(imageRepository.findByIdAndOwnerUsername(IMAGE_ID, USERNAME))
+                .thenReturn(Optional.of(image));
+        when(imageDataRepository.findById(IMAGE_ID))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ImageNotFoundException.class,
+                () -> imageService.getImageData(IMAGE_ID, owner)
+        );
+    }
+
+    @Test
+    void shouldReturnImageDataAsBytesWhenOwnedByUser() {
+        Image image = new Image(
+                "cat.jpg",
+                "image/jpeg",
+                11L,
+                owner
+        );
+        ImageData imageData = new ImageData(image, "image-bytes".getBytes());
+
+        when(imageRepository.findByIdAndOwnerUsername(IMAGE_ID, USERNAME))
+                .thenReturn(Optional.of(image));
+        when(imageDataRepository.findById(IMAGE_ID))
+                .thenReturn(Optional.of(imageData));
+
+        byte[] data = imageService.getImageDataAsBytes(IMAGE_ID, owner);
 
         assertArrayEquals("image-bytes".getBytes(), data);
     }
@@ -164,7 +218,7 @@ public class ImageServiceTest {
 
         assertThrows(
                 ImageNotFoundException.class,
-                () -> imageService.getImageData(IMAGE_ID, owner)
+                () -> imageService.getImageDataAsBytes(IMAGE_ID, owner)
         );
 
         verify(imageDataRepository, never()).findById(anyLong());
@@ -186,7 +240,7 @@ public class ImageServiceTest {
 
         assertThrows(
                 ImageNotFoundException.class,
-                () -> imageService.getImageData(IMAGE_ID, owner)
+                () -> imageService.getImageDataAsBytes(IMAGE_ID, owner)
         );
     }
 
