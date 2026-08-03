@@ -28,6 +28,10 @@ public class ImageData {
         return data;
     }
 
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
     public Image getImage() {
         return image;
     }

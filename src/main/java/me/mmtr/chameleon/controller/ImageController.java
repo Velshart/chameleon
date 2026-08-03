@@ -10,7 +10,6 @@ import me.mmtr.chameleon.service.images.ImageService;
 import me.mmtr.chameleon.service.images.ImageTransformationService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -81,17 +80,12 @@ public class ImageController {
             @AuthenticationPrincipal User currentUser
     ) {
         Image image = imageService.getImageForOwner(id, currentUser);
-        byte[] data = imageService.getImageData(id, currentUser);
+        byte[] data = imageService.getImageDataAsBytes(id, currentUser);
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(image.getContentType()))
-                .header(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        "inline; filename=\"" +
-                                image.getOriginalFilename() +
-                                "\""
-                )
-                .body(data);
+                .contentType(
+                        MediaType.parseMediaType(image.getContentType())
+                ).body(data);
     }
 
     @PostMapping("/{id}/transform")

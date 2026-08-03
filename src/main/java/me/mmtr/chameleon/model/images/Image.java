@@ -52,6 +52,11 @@ public class Image {
         this.owner = owner;
     }
 
+    public void updateAfterTransformation(String newContentType, long newSize) {
+        this.contentType = newContentType;
+        this.size = newSize;
+    }
+
     public Long getId() {
         return id;
     }
