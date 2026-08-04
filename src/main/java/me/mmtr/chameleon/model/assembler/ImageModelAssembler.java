@@ -15,11 +15,21 @@ public class ImageModelAssembler implements RepresentationModelAssembler<ImageRe
     public EntityModel<ImageResponse> toModel(ImageResponse entity) {
         return EntityModel.of(
                 entity,
-                linkTo(methodOn(ImageController.class).getImage(entity.id(), null))
+                linkTo(methodOn(ImageController.class)
+                        .getImage(entity.id(), null))
                         .withSelfRel(),
-                linkTo(methodOn(ImageController.class).listOwnerImages(null))
+                linkTo(methodOn(ImageController.class)
+                        .listOwnerImages(null))
                         .withRel("images"),
-                linkTo(methodOn(ImageController.class).delete(entity.id(), null))
+                linkTo(methodOn(ImageController.class)
+                        .transformImage(
+                                entity.id(),
+                                null,
+                                null
+                        ))
+                        .withRel("transform"),
+                linkTo(methodOn(ImageController.class)
+                        .delete(entity.id(), null))
                         .withRel("delete")
         );
     }
