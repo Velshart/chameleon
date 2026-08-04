@@ -227,7 +227,7 @@ public class ImageControllerTests {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<List<TransformationRequest>> captor =
-                ArgumentCaptor.forClass(List.class);
+                ArgumentCaptor.captor();
 
         verify(transformationService).transformImage(
                 eq(IMAGE_ID),

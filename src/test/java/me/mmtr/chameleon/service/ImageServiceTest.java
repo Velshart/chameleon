@@ -70,7 +70,7 @@ public class ImageServiceTest {
         assertEquals("cat.jpg", imageResponse.originalFilename());
         assertEquals("image/jpeg", imageResponse.contentType());
 
-        ArgumentCaptor<Image> imageCaptor = ArgumentCaptor.forClass(Image.class);
+        ArgumentCaptor<Image> imageCaptor = ArgumentCaptor.captor();
 
         verify(imageRepository).save(imageCaptor.capture());
 
@@ -80,7 +80,7 @@ public class ImageServiceTest {
         assertEquals(owner, capturedImage.getOwner());
 
         ArgumentCaptor<ImageData> imageDataCaptor =
-                ArgumentCaptor.forClass(ImageData.class);
+                ArgumentCaptor.captor();
 
         verify(imageDataRepository).save(imageDataCaptor.capture());
 

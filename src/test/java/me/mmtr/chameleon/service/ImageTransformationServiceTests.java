@@ -105,7 +105,7 @@ public class ImageTransformationServiceTests {
         );
 
         ArgumentCaptor<TransformationRequest> requestArgumentCaptor =
-                ArgumentCaptor.forClass(TransformationRequest.class);
+                ArgumentCaptor.captor();
 
         verify(strategyRegistry, times(2))
                 .apply(
