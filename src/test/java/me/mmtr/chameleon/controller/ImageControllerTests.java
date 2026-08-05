@@ -69,7 +69,10 @@ public class ImageControllerTests {
     @Test
     void shouldReturn201WithImageDetailsAndLinksAfterUpload() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
-                "file", "cat.jpg", MediaType.IMAGE_JPEG_VALUE, "image-bytes".getBytes()
+                "file",
+                "cat.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "image-bytes".getBytes()
         );
 
         ImageResponse response = new ImageResponse(
@@ -109,14 +112,15 @@ public class ImageControllerTests {
                 Instant.parse("2026-07-29T10:00:00Z")
         );
 
-        when(imageService.getAllForOwner(CURRENT_USER)).thenReturn(List.of(response));
+        when(imageService.getAllForOwner(CURRENT_USER))
+                .thenReturn(List.of(response));
 
         mockMvc.perform(get("/api/images")
                         .with(user(CURRENT_USER)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.imageResponseList[0].id")
+                .andExpect(jsonPath("$._embedded.images[0].id")
                         .value(IMAGE_ID))
-                .andExpect(jsonPath("$._embedded.imageResponseList[0]._links.self.href")
+                .andExpect(jsonPath("$._embedded.images[0]._links.self.href")
                         .value("http://localhost/api/images/1"))
                 .andExpect(jsonPath("$._links.self.href")
                         .value("http://localhost/api/images"));

@@ -2,9 +2,13 @@ package me.mmtr.chameleon.model.assembler;
 
 import me.mmtr.chameleon.controller.ImageController;
 import me.mmtr.chameleon.model.dto.request.ImageResponse;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.StreamSupport;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -31,6 +35,21 @@ public class ImageModelAssembler implements RepresentationModelAssembler<ImageRe
                 linkTo(methodOn(ImageController.class)
                         .delete(entity.id(), null))
                         .withRel("delete")
+        );
+    }
+
+    @Override
+    public CollectionModel<EntityModel<ImageResponse>> toCollectionModel(Iterable<? extends ImageResponse> entities) {
+        List<EntityModel<ImageResponse>> models = StreamSupport.stream(
+                        entities.spliterator(), false)
+                .map(this::toModel)
+                .toList();
+
+        return CollectionModel.of(
+                models,
+                linkTo(methodOn(ImageController.class)
+                        .listOwnerImages(null))
+                        .withSelfRel()
         );
     }
 }

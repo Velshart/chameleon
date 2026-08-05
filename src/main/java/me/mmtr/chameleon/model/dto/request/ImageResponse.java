@@ -1,9 +1,11 @@
 package me.mmtr.chameleon.model.dto.request;
 
 import me.mmtr.chameleon.model.images.Image;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.time.Instant;
 
+@Relation(itemRelation = "image", collectionRelation = "images")
 public record ImageResponse(
         Long id,
         String originalFilename,

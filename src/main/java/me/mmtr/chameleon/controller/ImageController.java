@@ -19,9 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 @RestController
 @RequestMapping("/api/images")
 public class ImageController {
@@ -57,21 +54,10 @@ public class ImageController {
     public ResponseEntity<CollectionModel<EntityModel<ImageResponse>>> listOwnerImages(
             @AuthenticationPrincipal User currentUser
     ) {
-        List<EntityModel<ImageResponse>> imagesEntityModelList =
-                imageService.getAllForOwner(currentUser)
-                        .stream()
-                        .map(imageModelAssembler::toModel)
-                        .toList();
+        List<ImageResponse> images =
+                imageService.getAllForOwner(currentUser);
 
-        CollectionModel<EntityModel<ImageResponse>> collectionModel =
-                CollectionModel.of(
-                        imagesEntityModelList,
-                        linkTo(methodOn(ImageController.class)
-                                .listOwnerImages(null)
-                        ).withSelfRel()
-                );
-
-        return ResponseEntity.ok(collectionModel);
+        return ResponseEntity.ok(imageModelAssembler.toCollectionModel(images));
     }
 
     @GetMapping("/{id}")
