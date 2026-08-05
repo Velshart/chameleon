@@ -53,4 +53,8 @@ public class RateLimitingFilter extends OncePerRequestFilter {
                 .addLimit(limit)
                 .build();
     }
+
+    public void reset() {
+        buckets.clear();
+    }
 }
