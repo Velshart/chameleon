@@ -136,11 +136,72 @@ Uploads a new image using multipart/form-data with a file field.
 
 #### `GET /api/images`
 
-Returns a list of all images owned by the currently authenticated user.
+Returns a paginated list of images owned by the currently authenticated user.
 
-#### `GET /api/images/{id}`
+**Query parameters:**
 
+| Parameter | Default (if not provided) | Description |
+|---|---------------------------|---|
+| `page` | `0`                       | Page number (zero-based) |
+| `size` | `10`                      | Number of items per page |
+| `sort` | `-`                       | Sorting criteria, e.g. `sort=uploadedAt,desc` |#### `GET /api/images/{id}`
+
+**Example:** `GET /api/images?page=0&size=2&sort=uploadedAt,desc`
+
+**Response `200 OK`:**
+```json
+{
+  "_embedded": {
+    "images": [
+      {
+        "_links": {
+          "self": {
+            "href": "http://localhost:8080/api/images/706"
+          },
+          "images": {
+            "href": "http://localhost:8080/api/images"
+          },
+          "transform": {
+            "href": "http://localhost:8080/api/images/706/transform"
+          },
+          "delete": {
+            "href": "http://localhost:8080/api/images/706"
+          }
+        },
+        "id": 706,
+        "originalFilename": "cat.png",
+        "contentType": "image/png",
+        "size": 397765,
+        "uploadedAt": "2026-08-06T13:00:57.852757Z"
+      }
+    ]
+  },
+  "_links": {
+    "first": {
+      "href": "http://localhost:8080/api/images?page=0&size=1&sort=uploadedAt,desc"
+    },
+    "self": {
+      "href": "http://localhost:8080/api/images?page=0&size=1&sort=uploadedAt,desc"
+    },
+    "next": {
+      "href": "http://localhost:8080/api/images?page=1&size=1&sort=uploadedAt,desc"
+    },
+    "last": {
+      "href": "http://localhost:8080/api/images?page=5&size=1&sort=uploadedAt,desc"
+    }
+  },
+  "page": {
+    "number": 0,
+    "size": 1,
+    "totalElements": 6,
+    "totalPages": 6
+  }
+}
+```
+
+### `GET /api/images/{id}`
 Returns raw binary data for the image with the specified ID (if owned by the logged-in user). The Content-Type header matches the image format.
+
 #### `DELETE /api/images/{id}`
 
 Deletes the image with the specified `id`. Returns `204 No Content`.

@@ -23,7 +23,11 @@ public class ImageModelAssembler implements RepresentationModelAssembler<ImageRe
                         .getImage(entity.id(), null))
                         .withSelfRel(),
                 linkTo(methodOn(ImageController.class)
-                        .listOwnerImages(null))
+                        .listOwnerImages(
+                                null,
+                                null,
+                                null
+                        ))
                         .withRel("images"),
                 linkTo(methodOn(ImageController.class)
                         .transformImage(
@@ -48,7 +52,11 @@ public class ImageModelAssembler implements RepresentationModelAssembler<ImageRe
         return CollectionModel.of(
                 models,
                 linkTo(methodOn(ImageController.class)
-                        .listOwnerImages(null))
+                        .listOwnerImages(
+                                null,
+                                null,
+                                null
+                        ))
                         .withSelfRel()
         );
     }

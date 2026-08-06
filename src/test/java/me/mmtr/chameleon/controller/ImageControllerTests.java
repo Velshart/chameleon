@@ -18,6 +18,10 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -28,9 +32,9 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.Matchers.endsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -95,11 +99,11 @@ public class ImageControllerTests {
                 .andExpect(jsonPath("$.originalFilename")
                         .value("cat.jpg"))
                 .andExpect(jsonPath("$._links.self.href")
-                        .value("http://localhost/api/images/1"))
+                        .value(endsWith("/api/images/1")))
                 .andExpect(jsonPath("$._links.delete.href")
-                        .value("http://localhost/api/images/1"))
+                        .value(endsWith("/api/images/1")))
                 .andExpect(jsonPath("$._links.images.href")
-                        .value("http://localhost/api/images"));
+                        .value(endsWith("/api/images")));
     }
 
     @Test
@@ -112,8 +116,12 @@ public class ImageControllerTests {
                 Instant.parse("2026-07-29T10:00:00Z")
         );
 
-        when(imageService.getAllForOwner(CURRENT_USER))
-                .thenReturn(List.of(response));
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<ImageResponse> page =
+                new PageImpl<>(List.of(response), pageable, 1);
+
+        when(imageService.getAllForOwner(eq(CURRENT_USER), any(Pageable.class)))
+                .thenReturn(page);
 
         mockMvc.perform(get("/api/images")
                         .with(user(CURRENT_USER)))
@@ -121,15 +129,28 @@ public class ImageControllerTests {
                 .andExpect(jsonPath("$._embedded.images[0].id")
                         .value(IMAGE_ID))
                 .andExpect(jsonPath("$._embedded.images[0]._links.self.href")
-                        .value("http://localhost/api/images/1"))
+                        .value(endsWith("/api/images/1")))
                 .andExpect(jsonPath("$._links.self.href")
-                        .value("http://localhost/api/images"));
+                        .value(endsWith("/api/images?page=0&size=2")))
+                .andExpect(jsonPath("$.page.size")
+                        .value(2))
+                .andExpect(jsonPath("$.page.totalElements")
+                        .value(1))
+                .andExpect(jsonPath("$.page.totalPages")
+                        .value(1))
+                .andExpect(jsonPath("$.page.number")
+                        .value(0));
     }
 
     @Test
     void shouldReturnEmptyListWithLinkWhenUserHasNoImages() throws Exception {
-        when(imageService.getAllForOwner(CURRENT_USER))
-                .thenReturn(Collections.emptyList());
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<ImageResponse> emptyPage =
+                new PageImpl<>(Collections.emptyList(), pageable, 0);
+
+
+        when(imageService.getAllForOwner(eq(CURRENT_USER), any(Pageable.class)))
+                .thenReturn(emptyPage);
 
         mockMvc.perform(get("/api/images")
                         .with(user(CURRENT_USER)))
@@ -137,8 +158,16 @@ public class ImageControllerTests {
                 .andExpect(jsonPath("$._embedded.imageResponseList")
                         .doesNotExist())
                 .andExpect(jsonPath("$._links.self.href")
-                        .value("http://localhost/api/images")
-                );
+                        .value(endsWith("/api/images?page=0&size=2"))
+                )
+                .andExpect(jsonPath("$.page.size")
+                        .value(2))
+                .andExpect(jsonPath("$.page.totalElements")
+                        .value(0))
+                .andExpect(jsonPath("$.page.totalPages")
+                        .value(0))
+                .andExpect(jsonPath("$.page.number")
+                        .value(0));
     }
 
     @Test

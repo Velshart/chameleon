@@ -15,12 +15,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -292,29 +297,63 @@ public class ImageServiceTest {
                 owner
         );
 
-        when(imageRepository.findAllByOwnerUsernameOrderByUploadedAtDesc(USERNAME))
-                .thenReturn(List.of(image1, image2));
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<Image> imagePage = new PageImpl<>(List.of(image1, image2), pageable, 2);
 
-        List<ImageResponse> result = imageService.getAllForOwner(owner);
+        when(imageRepository.findAllByOwnerUsername(
+                USERNAME,
+                pageable
+        )).thenReturn(imagePage);
 
-        assertEquals(2, result.size());
+        Page<ImageResponse> result = imageService.getAllForOwner(
+                owner,
+                pageable
+        );
+
+        assertEquals(2, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
+        assertEquals(2, result.getContent().size());
         assertEquals(
                 image1.getOriginalFilename(),
-                result.getFirst().originalFilename()
+                result.getContent().get(0).originalFilename()
         );
         assertEquals(
                 image2.getOriginalFilename(),
-                result.getLast().originalFilename()
+                result.getContent().get(1).originalFilename()
         );
+
+        verify(imageRepository)
+                .findAllByOwnerUsername(
+                        USERNAME,
+                        pageable
+                );
     }
 
     @Test
     void shouldReturnEmptyListWhenOwnerHasNoImages() {
-        when(imageRepository.findAllByOwnerUsernameOrderByUploadedAtDesc(USERNAME))
-                .thenReturn(List.of());
 
-        List<ImageResponse> result = imageService.getAllForOwner(owner);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Image> page = new PageImpl<>(
+                Collections.emptyList(),
+                pageable,
+                0
+        );
+        when(imageRepository.findAllByOwnerUsername(
+                USERNAME,
+                pageable
+        )).thenReturn(page);
 
-        assertEquals(0, result.size());
+        Page<ImageResponse> result =
+                imageService.getAllForOwner(owner, pageable);
+
+        assertEquals(0, result.getTotalElements());
+        assertEquals(0, result.getTotalPages());
+        assertTrue(result.getContent().isEmpty());
+
+        verify(imageRepository)
+                .findAllByOwnerUsername(
+                        USERNAME,
+                        pageable
+                );
     }
 }

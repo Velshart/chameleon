@@ -8,12 +8,13 @@ import me.mmtr.chameleon.model.images.Image;
 import me.mmtr.chameleon.model.images.ImageData;
 import me.mmtr.chameleon.repository.ImageDataRepository;
 import me.mmtr.chameleon.repository.ImageRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.List;
 
 @Service
 public class ImageService {
@@ -84,13 +85,13 @@ public class ImageService {
         imageRepository.delete(image);
     }
 
-    public List<ImageResponse> getAllForOwner(User currentUser) {
-        return imageRepository
-                .findAllByOwnerUsernameOrderByUploadedAtDesc(
-                        currentUser.getUsername()
-                )
-                .stream()
-                .map(ImageResponse::fromImage)
-                .toList();
+    public Page<ImageResponse> getAllForOwner(
+            User currentUser,
+            Pageable pageable
+    ) {
+        return imageRepository.findAllByOwnerUsername(
+                currentUser.getUsername(),
+                pageable
+        ).map(ImageResponse::fromImage);
     }
 }
