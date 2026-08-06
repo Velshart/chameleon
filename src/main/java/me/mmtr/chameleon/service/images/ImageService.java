@@ -56,7 +56,8 @@ public class ImageService {
     }
 
     public Image getImageForOwner(Long id, User currentUser) {
-        return imageRepository.findByIdAndOwnerUsername(id, currentUser.getUsername())
+        return imageRepository
+                .findByIdAndOwnerUsername(id, currentUser.getUsername())
                 .orElseThrow(() -> new ImageNotFoundException(id));
     }
 
@@ -84,7 +85,10 @@ public class ImageService {
     }
 
     public List<ImageResponse> getAllForOwner(User currentUser) {
-        return imageRepository.findAllByOwnerUsernameOrderByUploadedAtDesc(currentUser.getUsername())
+        return imageRepository
+                .findAllByOwnerUsernameOrderByUploadedAtDesc(
+                        currentUser.getUsername()
+                )
                 .stream()
                 .map(ImageResponse::fromImage)
                 .toList();
