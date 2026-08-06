@@ -1,6 +1,18 @@
 # Chameleon
 A simple REST API for image processing, written in Spring Boot.
 
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [API Documentation](#api-documentation)
+    - [Authentication](#authentication)
+    - [Images](#images)
+    - [Image Transformation](#image-transformation)
+- [Testing](#testing)
+
 ## Features
 - **JWT Authentication** - User registration and login via Bearer tokens.
 - **Rate Limiting** - IP-based request limiting.
@@ -42,7 +54,7 @@ A simple REST API for image processing, written in Spring Boot.
 ### Steps
 
 1. Clone the repository.
-2. Create a PostgreSQL database and fill in your credentials in `application.properties`
+2. Create a PostgreSQL database and fill in your values in `application.properties` (check [Configuration](#configuration))
 3. Run the application:
 ```bash
 ./gradlew bootRun
@@ -51,7 +63,7 @@ A simple REST API for image processing, written in Spring Boot.
 
 ## Configuration
 Create an env.properties file in `/resources` and fill in your values.
-Example env.properties file:
+A sample env.properties file is shown below:
 
 ```properties
 # Database Configuration
