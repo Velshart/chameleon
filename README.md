@@ -32,17 +32,17 @@ A simple REST API for image processing, written in Spring Boot.
 
 ## Tech stack
 
-| Category | Technology |
-|---|---|
-| Language / Platform | Java 21+, Spring Boot 3 |
-| Security | Spring Security, JWT |
-| Data Access | Spring Data JPA, Hibernate |
-| Database | PostgreSQL |
-| Rate limiting | Bucket4j |
-| Image Processing | Thumbnailator, Java AWT |
-| Hypermedia | Spring HATEOAS |
-| Validation | Jakarta Bean Validation |
-| Testing | JUnit 5, Mockito |
+| Category | Technology                       |
+|---|----------------------------------|
+| Language / Platform | Java 21+, Spring Boot 3          |
+| Security | Spring Security, JWT             |
+| Data Access | Spring Data JPA, Hibernate       |
+| Database | PostgreSQL                       |
+| Rate limiting | Bucket4j                         |
+| Image Processing | Thumbnailator, Java AWT          |
+| Hypermedia | Spring HATEOAS                   |
+| Validation | Jakarta Bean Validation          |
+| Testing | JUnit 5, Mockito, Testcontainers |
 
 ## Getting started
 
@@ -155,7 +155,7 @@ Returns a paginated list of images owned by the currently authenticated user.
 | Parameter | Default (if not provided) | Description |
 |---|---------------------------|---|
 | `page` | `0`                       | Page number (zero-based) |
-| `size` | `10`                      | Number of items per page |
+| `size` | `5`                       | Number of items per page |
 | `sort` | `-`                       | Sorting criteria, e.g. `sort=uploadedAt,desc` |#### `GET /api/images/{id}`
 
 **Example:** `GET /api/images?page=0&size=2&sort=uploadedAt,desc`
