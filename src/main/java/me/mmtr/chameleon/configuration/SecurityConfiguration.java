@@ -1,5 +1,6 @@
 package me.mmtr.chameleon.configuration;
 
+import jakarta.servlet.http.HttpServletResponse;
 import me.mmtr.chameleon.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,14 +40,14 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
-//                .exceptionHandling(exceptions -> exceptions
-//                        .authenticationEntryPoint((_, response, _) -> {
-//                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                            response.setContentType("application/json");
-//                            response
-//                                    .getWriter()
-//                                    .write("{\"message\": \"Authentication required\"}");
-//                        }))
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((_, response, _) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response
+                                    .getWriter()
+                                    .write("{\"message\": \"Authentication required\"}");
+                        }))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
