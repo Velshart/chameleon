@@ -8,6 +8,7 @@ import me.mmtr.chameleon.model.images.Image;
 import me.mmtr.chameleon.model.images.ImageData;
 import me.mmtr.chameleon.repository.ImageDataRepository;
 import me.mmtr.chameleon.repository.ImageRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,14 +22,17 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
     private final ImageDataRepository imageDataRepository;
+    private final ImageDataCache imageDataCache;
 
 
     public ImageService(
             ImageRepository imageRepository,
-            ImageDataRepository imageDataRepository
+            ImageDataRepository imageDataRepository,
+            ImageDataCache imageDataCache
     ) {
         this.imageRepository = imageRepository;
         this.imageDataRepository = imageDataRepository;
+        this.imageDataCache = imageDataCache;
     }
 
     @Transactional
@@ -62,19 +66,11 @@ public class ImageService {
                 .orElseThrow(() -> new ImageNotFoundException(id));
     }
 
-    public ImageData getImageData(Long id, User currentUser) {
-        getImageForOwner(id, currentUser);
-
-        return imageDataRepository.findById(id)
-                .orElseThrow(() -> new ImageNotFoundException(id));
-    }
-
+    @Cacheable(value = "image_data", key = "#id")
     public byte[] getImageDataAsBytes(Long id, User currentUser) {
         getImageForOwner(id, currentUser);
 
-        return imageDataRepository.findById(id)
-                .map(ImageData::getData)
-                .orElseThrow(() -> new ImageNotFoundException(id));
+        return imageDataCache.getCachedData(id);
     }
 
     @Transactional
@@ -83,6 +79,7 @@ public class ImageService {
 
         imageDataRepository.deleteById(image.getId());
         imageRepository.delete(image);
+        imageDataCache.evict(id);
     }
 
     public Page<ImageResponse> getAllForOwner(

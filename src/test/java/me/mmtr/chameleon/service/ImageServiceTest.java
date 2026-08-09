@@ -7,6 +7,7 @@ import me.mmtr.chameleon.model.images.Image;
 import me.mmtr.chameleon.model.images.ImageData;
 import me.mmtr.chameleon.repository.ImageDataRepository;
 import me.mmtr.chameleon.repository.ImageRepository;
+import me.mmtr.chameleon.service.images.ImageDataCache;
 import me.mmtr.chameleon.service.images.ImageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,8 @@ public class ImageServiceTest {
     private ImageRepository imageRepository;
     @Mock
     private ImageDataRepository imageDataRepository;
+    @Mock
+    private ImageDataCache imageDataCache;
     @InjectMocks
     private ImageService imageService;
     private User owner;
@@ -143,60 +146,6 @@ public class ImageServiceTest {
     }
 
     @Test
-    void shouldReturnImageDataWhenOwnedByUser() {
-        Image image = new Image(
-                "cat.jpg",
-                "image/jpeg",
-                11L,
-                owner
-        );
-        ImageData imageData = new ImageData(image, "image-bytes".getBytes());
-
-        when(imageRepository.findByIdAndOwnerUsername(IMAGE_ID, USERNAME))
-                .thenReturn(Optional.of(image));
-        when(imageDataRepository.findById(IMAGE_ID))
-                .thenReturn(Optional.of(imageData));
-
-        ImageData returnedImageData = imageService.getImageData(IMAGE_ID, owner);
-        assertArrayEquals(
-                "image-bytes".getBytes(),
-                returnedImageData.getData()
-        );
-
-        assertEquals(image, returnedImageData.getImage());
-    }
-
-    @Test
-    void shouldPropagateImageNotFoundExceptionWhenOwnershipCheckFails() {
-        when(imageRepository.findByIdAndOwnerUsername(IMAGE_ID, USERNAME))
-                .thenReturn(Optional.empty());
-
-        assertThrows(
-                ImageNotFoundException.class,
-                () -> imageService.getImageData(IMAGE_ID, owner)
-        );
-    }
-
-    @Test
-    void shouldThrowImageNotFoundExceptionWhenImageDataNotFound() {
-        Image image = new Image(
-                "cat.jpg",
-                "image/jpeg",
-                11L,
-                owner
-        );
-        when(imageRepository.findByIdAndOwnerUsername(IMAGE_ID, USERNAME))
-                .thenReturn(Optional.of(image));
-        when(imageDataRepository.findById(IMAGE_ID))
-                .thenReturn(Optional.empty());
-
-        assertThrows(
-                ImageNotFoundException.class,
-                () -> imageService.getImageData(IMAGE_ID, owner)
-        );
-    }
-
-    @Test
     void shouldReturnImageDataAsBytesWhenOwnedByUser() {
         Image image = new Image(
                 "cat.jpg",
@@ -204,16 +153,18 @@ public class ImageServiceTest {
                 11L,
                 owner
         );
-        ImageData imageData = new ImageData(image, "image-bytes".getBytes());
+        byte[] imageBytes = "image-bytes".getBytes();
 
         when(imageRepository.findByIdAndOwnerUsername(IMAGE_ID, USERNAME))
                 .thenReturn(Optional.of(image));
-        when(imageDataRepository.findById(IMAGE_ID))
-                .thenReturn(Optional.of(imageData));
+
+        when(imageDataCache.getCachedData(IMAGE_ID)).thenReturn(
+                imageBytes
+        );
 
         byte[] data = imageService.getImageDataAsBytes(IMAGE_ID, owner);
 
-        assertArrayEquals("image-bytes".getBytes(), data);
+        assertArrayEquals(imageBytes, data);
     }
 
     @Test
@@ -226,11 +177,11 @@ public class ImageServiceTest {
                 () -> imageService.getImageDataAsBytes(IMAGE_ID, owner)
         );
 
-        verify(imageDataRepository, never()).findById(anyLong());
+        verifyNoInteractions(imageDataCache);
     }
 
     @Test
-    void shouldThrowNotFoundWhenImageDataNotFound() {
+    void shouldPropagateImageNotFoundExceptionWhenImageDataIsMissing() {
         Image image = new Image(
                 "cat.jpg",
                 "image/jpeg",
@@ -240,8 +191,9 @@ public class ImageServiceTest {
 
         when(imageRepository.findByIdAndOwnerUsername(IMAGE_ID, USERNAME))
                 .thenReturn(Optional.of(image));
-        when(imageDataRepository.findById(IMAGE_ID))
-                .thenReturn(Optional.empty());
+        when(imageDataCache.getCachedData(IMAGE_ID)).thenThrow(
+                new ImageNotFoundException(IMAGE_ID)
+        );
 
         assertThrows(
                 ImageNotFoundException.class,
@@ -266,6 +218,7 @@ public class ImageServiceTest {
 
         verify(imageDataRepository).deleteById(IMAGE_ID);
         verify(imageRepository).delete(image);
+        verify(imageDataCache).evict(IMAGE_ID);
     }
 
     @Test

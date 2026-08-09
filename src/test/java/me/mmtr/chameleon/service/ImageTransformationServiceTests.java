@@ -13,6 +13,7 @@ import me.mmtr.chameleon.repository.ImageRepository;
 import me.mmtr.chameleon.service.images.ImageService;
 import me.mmtr.chameleon.service.images.ImageTransformationService;
 import me.mmtr.chameleon.service.images.registry.ImageTransformationStrategyRegistry;
+import me.mmtr.chameleon.service.images.utilities.TestImageFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,10 +23,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -55,7 +58,13 @@ public class ImageTransformationServiceTests {
     }
 
     @Test
-    void shouldTransformImageAndSaveChanges() {
+    void shouldTransformImageAndSaveChanges() throws IOException {
+        BufferedImage bufferedImage =
+                TestImageFactory.solidColorImage(1, 1, Color.RED);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", outputStream);
+
+        byte[] imageBytes = outputStream.toByteArray();
         Image image = new Image(
                 "cat.png",
                 "image/png",
@@ -66,8 +75,10 @@ public class ImageTransformationServiceTests {
 
         when(imageService.getImageForOwner(IMAGE_ID, owner))
                 .thenReturn(image);
-        when(imageService.getImageData(IMAGE_ID, owner))
-                .thenReturn(imageData);
+        when(imageService.getImageDataAsBytes(IMAGE_ID, owner))
+                .thenReturn(imageBytes);
+        when(imageDataRepository.findById(IMAGE_ID))
+                .thenReturn(Optional.of(imageData));
 
         List<TransformationRequest> transformations = List.of(new GrayscaleRequest());
 
@@ -82,7 +93,13 @@ public class ImageTransformationServiceTests {
     }
 
     @Test
-    void shouldApplyEachTransformationInOrder() {
+    void shouldApplyEachTransformationInOrder() throws Exception {
+        BufferedImage bufferedImage =
+                TestImageFactory.solidColorImage(1, 1, Color.RED);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", outputStream);
+
+        byte[] imageBytes = outputStream.toByteArray();
         Image image = new Image(
                 "cat.png",
                 "image/png",
@@ -91,9 +108,12 @@ public class ImageTransformationServiceTests {
         );
         ImageData imageData = new ImageData(image, validPngBytes);
 
-        when(imageService.getImageForOwner(IMAGE_ID, owner)).thenReturn(image);
-        when(imageService.getImageData(IMAGE_ID, owner))
-                .thenReturn(imageData);
+        when(imageService.getImageForOwner(IMAGE_ID, owner))
+                .thenReturn(image);
+        when(imageService.getImageDataAsBytes(IMAGE_ID, owner))
+                .thenReturn(imageBytes);
+        when(imageDataRepository.findById(IMAGE_ID))
+                .thenReturn(Optional.of(imageData));
 
         List<TransformationRequest> transformations = List.of(
                 new GrayscaleRequest(),
@@ -134,7 +154,13 @@ public class ImageTransformationServiceTests {
     }
 
     @Test
-    void shouldPropagateImageNotFoundExceptionWhenImageDataIsMissing() {
+    void shouldPropagateImageNotFoundExceptionWhenImageDataIsMissing() throws Exception {
+        BufferedImage bufferedImage =
+                TestImageFactory.solidColorImage(1, 1, Color.RED);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", outputStream);
+
+        byte[] imageBytes = outputStream.toByteArray();
         Image image = new Image(
                 "cat.png",
                 "image/png",
@@ -143,7 +169,9 @@ public class ImageTransformationServiceTests {
         );
 
         when(imageService.getImageForOwner(IMAGE_ID, owner)).thenReturn(image);
-        when(imageService.getImageData(IMAGE_ID, owner))
+        when(imageService.getImageDataAsBytes(IMAGE_ID, owner))
+                .thenReturn(imageBytes);
+        when(imageDataRepository.findById(IMAGE_ID))
                 .thenThrow(new ImageNotFoundException(IMAGE_ID));
 
         assertThrows(ImageNotFoundException.class, () ->
@@ -167,8 +195,8 @@ public class ImageTransformationServiceTests {
 
         when(imageService.getImageForOwner(IMAGE_ID, owner)).thenReturn(image);
 
-        ImageData imageData = new ImageData(image, invalidPngBytes);
-        when(imageService.getImageData(IMAGE_ID, owner)).thenReturn(imageData);
+        when(imageService.getImageDataAsBytes(IMAGE_ID, owner))
+                .thenReturn(invalidPngBytes);
 
         assertThrows(IllegalStateException.class, () ->
                 transformationService.transformImage(

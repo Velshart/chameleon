@@ -1,5 +1,6 @@
 package me.mmtr.chameleon.service.images;
 
+import me.mmtr.chameleon.exception.ImageNotFoundException;
 import me.mmtr.chameleon.model.User;
 import me.mmtr.chameleon.model.context.TransformationContext;
 import me.mmtr.chameleon.model.dto.request.transformation.TransformationRequest;
@@ -9,6 +10,7 @@ import me.mmtr.chameleon.repository.ImageDataRepository;
 import me.mmtr.chameleon.repository.ImageRepository;
 import me.mmtr.chameleon.service.images.registry.ImageTransformationStrategyRegistry;
 import net.coobird.thumbnailator.Thumbnails;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -36,6 +38,7 @@ public class ImageTransformationService {
         this.imageDataRepository = imageDataRepository;
     }
 
+    @CacheEvict(value = "image_data", key = "#id")
     public TransformedImage transformImage(
             Long id,
             User currentUser,
@@ -43,9 +46,9 @@ public class ImageTransformationService {
     ) {
         Image databaseImage = imageService.getImageForOwner(id, currentUser);
 
-        ImageData imageData = imageService.getImageData(id, currentUser);
+        byte[] databaseImageBytes = imageService.getImageDataAsBytes(id, currentUser);
 
-        BufferedImage decodedImage = decode(imageData.getData());
+        BufferedImage decodedImage = decode(databaseImageBytes);
 
         TransformationContext context = new TransformationContext(decodedImage);
         for (TransformationRequest request : transformations) {
@@ -54,6 +57,9 @@ public class ImageTransformationService {
 
         byte[] resultBytes = encode(context);
         String newContentType = "image/" + context.getOutputFormat();
+
+        ImageData imageData = imageDataRepository.findById(id)
+                .orElseThrow(() -> new ImageNotFoundException(id));
 
         imageData.setData(resultBytes);
         imageDataRepository.save(imageData);
@@ -66,6 +72,7 @@ public class ImageTransformationService {
                 context.getOutputFormat()
         );
     }
+
 
     private BufferedImage decode(byte[] data) {
         try {

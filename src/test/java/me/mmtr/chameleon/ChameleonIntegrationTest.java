@@ -13,7 +13,9 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 import tools.jackson.databind.ObjectMapper;
 
 import javax.imageio.ImageIO;
@@ -30,8 +32,16 @@ public class ChameleonIntegrationTest {
     static final PostgreSQLContainer<?> postgres =
             new PostgreSQLContainer<>("postgres:16");
 
+    @SuppressWarnings("resource")
+    @ServiceConnection(name = "redis")
+    static final GenericContainer<?> redis =
+            new GenericContainer<>(
+                    DockerImageName.parse("redis:7-alpine")
+            ).withExposedPorts(6379);
+
     static {
         postgres.start();
+        redis.start();
     }
 
     @Autowired
