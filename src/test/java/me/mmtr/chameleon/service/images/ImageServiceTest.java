@@ -1,4 +1,4 @@
-package me.mmtr.chameleon.service;
+package me.mmtr.chameleon.service.images;
 
 import me.mmtr.chameleon.exception.ImageNotFoundException;
 import me.mmtr.chameleon.model.User;
@@ -7,8 +7,6 @@ import me.mmtr.chameleon.model.images.Image;
 import me.mmtr.chameleon.model.images.ImageData;
 import me.mmtr.chameleon.repository.ImageDataRepository;
 import me.mmtr.chameleon.repository.ImageRepository;
-import me.mmtr.chameleon.service.images.ImageDataCache;
-import me.mmtr.chameleon.service.images.ImageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

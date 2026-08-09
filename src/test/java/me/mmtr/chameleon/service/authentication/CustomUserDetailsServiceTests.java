@@ -1,8 +1,7 @@
-package me.mmtr.chameleon.service;
+package me.mmtr.chameleon.service.authentication;
 
 import me.mmtr.chameleon.model.User;
 import me.mmtr.chameleon.repository.UserRepository;
-import me.mmtr.chameleon.service.authentication.CustomUserDetailsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

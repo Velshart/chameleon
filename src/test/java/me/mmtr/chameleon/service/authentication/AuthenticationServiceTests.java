@@ -1,12 +1,10 @@
-package me.mmtr.chameleon.service;
+package me.mmtr.chameleon.service.authentication;
 
 import me.mmtr.chameleon.model.User;
 import me.mmtr.chameleon.model.dto.request.AuthenticationRequest;
 import me.mmtr.chameleon.model.dto.response.AuthenticationResponse;
 import me.mmtr.chameleon.model.dto.request.RegisterRequest;
 import me.mmtr.chameleon.repository.UserRepository;
-import me.mmtr.chameleon.service.authentication.AuthenticationService;
-import me.mmtr.chameleon.service.authentication.JwtService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

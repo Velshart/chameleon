@@ -1,8 +1,7 @@
-package me.mmtr.chameleon.service.images;
+package me.mmtr.chameleon.service.images.strategies;
 
 import me.mmtr.chameleon.model.context.TransformationContext;
 import me.mmtr.chameleon.model.dto.request.transformation.WatermarkRequest;
-import me.mmtr.chameleon.service.images.strategies.Watermark;
 import me.mmtr.chameleon.service.images.utilities.TestImageFactory;
 import net.coobird.thumbnailator.geometry.Positions;
 import org.junit.jupiter.api.Test;
