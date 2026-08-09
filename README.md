@@ -1,6 +1,14 @@
 # Chameleon
 A simple REST API for image processing, written in Spring Boot.
 
+![Original rose](docs/images/original_rose.png)
+
+![Grayscaled rose](docs/images/grayscaled_rose.png)
+
+![Original rose](docs/images/sepia_rose.png)
+
+![Original rose](docs/images/watermarked_rose.png)
+
 ## Table of Contents
 
 - [Features](#features)
@@ -16,7 +24,7 @@ A simple REST API for image processing, written in Spring Boot.
 ## Features
 - **JWT Authentication** - User registration and login via Bearer tokens.
 - **Rate Limiting** - IP-based request limiting.
-- **Image Management** - Upload, retrieve, list, and delete images
+- **Image Management** - Upload, retrieve, list, and delete images.
 - **Image Transformation** - Ability to chain multiple sequential transformations:
 - `RESIZE` - Resize image dimensions
 - `CROP` - Crop image regions
@@ -29,32 +37,34 @@ A simple REST API for image processing, written in Spring Boot.
 - `COMPRESS` - Adjust output quality compression
 - `FORMAT` - Convert output format (e.g., to PNG/JPEG)
 - **HATEOAS** - Each API response contains hypermedia links to related actions (`self`, `delete`, `transform`, `images`)
-
+- **Caching** - Image bytes are cached to provide fast retrieval.
 ## Tech stack
 
-| Category | Technology                       |
-|---|----------------------------------|
-| Language / Platform | Java 21+, Spring Boot 3          |
-| Security | Spring Security, JWT             |
-| Data Access | Spring Data JPA, Hibernate       |
-| Database | PostgreSQL                       |
-| Rate limiting | Bucket4j                         |
-| Image Processing | Thumbnailator, Java AWT          |
-| Hypermedia | Spring HATEOAS                   |
-| Validation | Jakarta Bean Validation          |
-| Testing | JUnit 5, Mockito, Testcontainers |
+| Category             | Technology                       |
+|----------------------|----------------------------------|
+| Language / Platform  | Java 21+, Spring Boot 3          |
+| Security             | Spring Security, JWT             |
+| Data Access          | Spring Data JPA, Hibernate       |
+| Caching              | Redis                            |
+| Database             | PostgreSQL                       |
+| Rate limiting        | Bucket4j                         |
+| Image Processing     | Thumbnailator, Java AWT          |
+| Hypermedia           | Spring HATEOAS                   |
+| Validation           | Jakarta Bean Validation          |
+| Testing              | JUnit 5, Mockito, Testcontainers |
 
 ## Getting started
 
 ### Prerequisites
 - Java 21+
 - PostgreSQL (locally or in a container)
+- Redis (locally or in a container)
 - Gradle (included wrapper `./gradlew`)
 
 ### Steps
 
 1. Clone the repository.
-2. Create a PostgreSQL database and fill in your values in `application.properties` (check [Configuration](#configuration))
+2. Ensure **PostgreSQL** and **Redis** instances are running, then configure your connection details in `env.properties` / `application.properties` (check [Configuration](#configuration)).
 3. Run the application:
 ```bash
 ./gradlew bootRun
@@ -70,6 +80,11 @@ A sample env.properties file is shown below:
 DATASOURCE_URL=jdbc:postgresql://localhost:5432/chameleon
 DATASOURCE_USERNAME=postgres
 DATASOURCE_PASSWORD=postgres
+
+# Redis Configuration
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_TIME_TO_LIVE=10m
 
 # JWT Configuration
 JWT_SECRET=<base64-encoded-256-bit-key>
@@ -152,11 +167,11 @@ Returns a paginated list of images owned by the currently authenticated user.
 
 **Query parameters:**
 
-| Parameter | Default (if not provided) | Description |
-|---|---------------------------|---|
-| `page` | `0`                       | Page number (zero-based) |
-| `size` | `5`                       | Number of items per page |
-| `sort` | `-`                       | Sorting criteria, e.g. `sort=uploadedAt,desc` |#### `GET /api/images/{id}`
+| Parameter | Default (if not provided) | Description                                   |
+|-----------|---------------------------|-----------------------------------------------|
+| `page`    | `0`                       | Page number (zero-based)                      |
+| `size`    | `5`                       | Number of items per page                      |
+| `sort`    | `-`                       | Sorting criteria, e.g. `sort=uploadedAt,desc` |
 
 **Example:** `GET /api/images?page=0&size=2&sort=uploadedAt,desc`
 
@@ -238,18 +253,18 @@ Applies a sequence of transformations to an image and overwrites its data (and m
 
 **Available Transformation Types:**
 
-| Type | Parameters                                     |
-|---|------------------------------------------------|
-| `RESIZE` | `width` (int), `height` (int)                  |
-| `CROP` | `x`, `y`, `width`, `height` (int)              |
-| `ROTATE` | `angle` (double)                               |
-| `FLIP` | -                                              |
-| `MIRROR` | -                                              |
+| Type        | Parameters                                     |
+|-------------|----------------------------------------------- |
+| `RESIZE`    | `width` (int), `height` (int)                  |
+| `CROP`      | `x`, `y`, `width`, `height` (int)              |
+| `ROTATE`    | `angle` (double)                               |
+| `FLIP`      | -                                              |
+| `MIRROR`    | -                                              |
 | `GRAYSCALE` | -                                              |
-| `SEPIA` | -                                              |
+| `SEPIA`     | -                                              |
 | `WATERMARK` | `text` (String), `position`, `opacity` (float) |
-| `COMPRESS` | `quality` (float, 0.0–1.0)                     |
-| `FORMAT` | `format` (String, e.g., `"png"`, `"jpg"`)      |
+| `COMPRESS`  | `quality` (float, 0.0–1.0)                     |
+| `FORMAT`    | `format` (String, e.g., `"png"`, `"jpg"`)      |
 
 **Response (200 OK):** Raw image bytes with a Content-Type matching the final image format.
 
