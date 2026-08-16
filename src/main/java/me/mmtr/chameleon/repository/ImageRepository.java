@@ -12,10 +12,6 @@ import java.util.Optional;
 public interface ImageRepository extends JpaRepository<Image, Long> {
     Optional<Image> findByIdAndOwnerUsername(Long id, String username);
 
-//    Page<Image> findAllByOwnerUsernameOrderByUploadedAtDesc(
-//            String username,
-//            Pageable pageable
-//    );
     Page<Image> findAllByOwnerUsername(
             String username,
             Pageable pageable
