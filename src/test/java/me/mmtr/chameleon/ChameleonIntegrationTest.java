@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ChameleonIntegrationTest {
+public abstract class ChameleonIntegrationTest {
     @ServiceConnection
     static final PostgreSQLContainer<?> postgres =
             new PostgreSQLContainer<>("postgres:16");
