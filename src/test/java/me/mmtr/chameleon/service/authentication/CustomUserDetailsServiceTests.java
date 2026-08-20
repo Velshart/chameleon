@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CustomUserDetailsServiceTests {
 
-    private final String USERNAME = "test_user";
+    private static final String USERNAME = "test_user";
 
     @Mock
     private UserRepository userRepository;
