@@ -56,7 +56,9 @@ public class AuthenticationService {
 
         User user = userRepository.findByUsername(authenticationRequest.username())
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("Invalid login credentials provided")
+                        new UsernameNotFoundException(
+                                "Invalid login credentials provided"
+                        )
                 );
 
         return new AuthenticationResponse(jwtService.generateToken(user));
